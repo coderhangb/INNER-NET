@@ -37,21 +37,28 @@ function handleError(error) {
 }
 
 async function signupPost(req, res) {
-  const { fullName, email, password } = req.body;
+  const { fullName, email, password, role } = req.body;
   try {
-    const user = await User.create({ fullName, email, password });
-    res.cookie("jwt", createToken(user._id), {
-      httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-      sameSite: "none",
-      secure: true,
-    });
+    const user = await User.create({ fullName, email, password, role });
+    res.cookie(
+      "jwt",
+      createToken({
+        userId: user._id,
+        userRole: user.role,
+      }),
+      {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+        sameSite: "none",
+        secure: true,
+      },
+    );
 
     res.status(201).json({
       _id: user._id,
       fullName: user.fullName,
       email: user.email,
-      profileAvatar: user.profileAvatar,
+      role: user.role,
     });
   } catch (error) {
     const err = handleError(error);
@@ -63,17 +70,24 @@ async function loginPost(req, res) {
   const { email, password } = req.body;
   try {
     const user = await User.login(email, password);
-    res.cookie("jwt", createToken(user._id), {
-      httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-      sameSite: "none",
-      secure: true,
-    });
+    res.cookie(
+      "jwt",
+      createToken({
+        userId: user._id,
+        userRole: user.role,
+      }),
+      {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+        sameSite: "none",
+        secure: true,
+      },
+    );
     res.status(200).json({
       _id: user._id,
       fullName: user.fullName,
       email: user.email,
-      profileAvatar: user.profileAvatar,
+      role: user.role,
     });
   } catch (error) {
     const err = handleError(error);

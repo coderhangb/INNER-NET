@@ -21,6 +21,11 @@ const userSchema = new mongoose.Schema(
       minlength: [6, "Password must have at least 6 characters"],
       required: [true, "Please enter an password"],
     },
+    role: {
+      type: String,
+      enum: ["student", "parents", "teacher"],
+      required: [true, "Please choose who you are to continue"],
+    },
   },
   //   { timestamps: true }, //createAt && updateAt
 );
