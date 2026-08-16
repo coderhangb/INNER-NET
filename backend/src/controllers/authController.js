@@ -7,6 +7,7 @@ function handleError(error) {
     fullName: "",
     email: "",
     password: "",
+    role: "",
   };
 
   // incorrect email/password
@@ -40,19 +41,12 @@ async function signupPost(req, res) {
   const { fullName, email, password, role } = req.body;
   try {
     const user = await User.create({ fullName, email, password, role });
-    res.cookie(
-      "jwt",
-      createToken({
-        userId: user._id,
-        userRole: user.role,
-      }),
-      {
-        httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7,
-        sameSite: "none",
-        secure: true,
-      },
-    );
+    res.cookie("jwt", createToken(user._id), {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      sameSite: "none",
+      secure: true,
+    });
 
     res.status(201).json({
       _id: user._id,
@@ -70,19 +64,12 @@ async function loginPost(req, res) {
   const { email, password } = req.body;
   try {
     const user = await User.login(email, password);
-    res.cookie(
-      "jwt",
-      createToken({
-        userId: user._id,
-        userRole: user.role,
-      }),
-      {
-        httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7,
-        sameSite: "none",
-        secure: true,
-      },
-    );
+    res.cookie("jwt", createToken(user._id), {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      sameSite: "none",
+      secure: true,
+    });
     res.status(200).json({
       _id: user._id,
       fullName: user.fullName,

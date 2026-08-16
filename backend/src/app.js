@@ -20,5 +20,5 @@ app.use("/api/llm", llmRoutes);
 //Bao loi nen tam tat di
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
-  // connectDB();
+  connectDB();
 });
