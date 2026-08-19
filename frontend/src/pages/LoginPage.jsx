@@ -218,7 +218,6 @@ function LoginPage() {
 
                     <input
                       type="password"
-                      autoComplete="current-password"
                       value={formData.password}
                       onChange={(e) =>
                         setFormData({
