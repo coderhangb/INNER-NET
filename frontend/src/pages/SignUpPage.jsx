@@ -23,6 +23,16 @@ function SignUpPage() {
     role: "student",
   });
 
+  const [isRoleOpen, setIsRoleOpen] = useState(false);
+
+  const roles = [
+    { value: "student", label: "Student" },
+    { value: "parents", label: "Parent" },
+    { value: "teacher", label: "Teacher" },
+  ];
+
+  const selectedRole = roles.find((role) => role.value === formData.role);
+
   const { signup, isSigningUp } = useAuthStore();
 
   const handleChange = (e) => {
@@ -148,58 +158,114 @@ function SignUpPage() {
                   <div className="relative md:hidden">
                     <Users
                       className="
-                        absolute
-                        left-4
-                        top-1/2
-                        size-5
-                        -translate-y-1/2
-                        text-[#222222]
-                      "
+                          pointer-events-none
+                          absolute
+                          left-4
+                          top-1/2
+                          z-10
+                          size-5
+                          -translate-y-1/2
+                          text-[#222222]
+                        "
                     />
 
-                    <select
-                      name="role"
-                      value={formData.role}
-                      onChange={handleChange}
+                    <button
+                      type="button"
+                      onClick={() => setIsRoleOpen((prev) => !prev)}
                       className="
-                        h-13
-                        w-full
-                        appearance-none
-                        rounded-2xl
-                        border-2
-                        border-[#8B6BB1]
-                        bg-white
-                        pl-13
-                        pr-4
-                        text-sm
-                        font-medium
-                        text-[#222222]
-                        outline-none
-                        transition
-                        focus:border-[#65B82E]
-                        focus:ring-2
-                        focus:ring-[#65B82E]/20
-                        sm:h-14
-                        sm:text-[15px]
-                        xl:h-15.5
-                      "
+                          relative
+                          flex
+                          h-13
+                          w-full
+                          items-center
+                          rounded-2xl
+                          border-2
+                          border-[#8B6BB1]
+                          bg-white
+                          pl-13
+                          pr-12
+                          text-left
+                          text-sm
+                          font-medium
+                          text-[#222222]
+                          outline-none
+                          transition
+                          focus:border-[#65B82E]
+                          focus:ring-2
+                          focus:ring-[#65B82E]/20
+                          sm:h-14
+                          sm:text-[15px]
+                          xl:h-15.5
+                        "
                     >
-                      <option value="student">Student</option>
-                      <option value="parents">Parent</option>
-                      <option value="teacher">Teacher</option>
-                    </select>
+                      {selectedRole?.label}
 
-                    <ChevronDown
-                      className="
-                        pointer-events-none
-                        absolute
-                        right-5
-                        top-1/2
-                        size-5
-                        -translate-y-1/2
-                        text-[#222222]
-                      "
-                    />
+                      <ChevronDown
+                        className={`
+                            pointer-events-none
+                            absolute
+                            right-5
+                            top-1/2
+                            size-5
+                            -translate-y-1/2
+                            text-[#222222]
+                            transition-transform
+                            duration-200
+                            ${isRoleOpen ? "rotate-180" : "rotate-0"}
+                          `}
+                      />
+                    </button>
+
+                    {isRoleOpen && (
+                      <div
+                        className="
+                          absolute
+                          left-0
+                          right-0
+                          top-full
+                          z-50
+                          mt-2
+                          overflow-hidden
+                          border
+                          rounded-lg
+                          border-[#8B6BB1]
+                          bg-white
+                          shadow-[0_8px_20px_rgba(0,0,0,0.15)]
+                        "
+                      >
+                        {roles.map((role) => (
+                          <button
+                            key={role.value}
+                            type="button"
+                            onClick={() => {
+                              setFormData((prev) => ({
+                                ...prev,
+                                role: role.value,
+                              }));
+                              setIsRoleOpen(false);
+                            }}
+                            className={`
+                                block
+                                w-full
+                                px-4
+                                py-3
+                                text-left
+                                text-sm
+                                font-medium
+                                transition-colors
+                                hover:bg-[#65B82E]/10
+                                ${
+                                  formData.role === role.value
+                                    ? "bg-[#65B82E]/10 text-[#65B82E]"
+                                    : "text-[#222222]"
+                                }
+                              `}
+                          >
+                            {role.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   <div className="relative">
