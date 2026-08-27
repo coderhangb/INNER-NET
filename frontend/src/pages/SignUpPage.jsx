@@ -53,7 +53,7 @@ function SignUpPage() {
     <>
       <AuthDecor />
 
-      <div className="flex min-h-screen w-full items-center justify-center bg-[#FFF7E3] px-4 py-6 sm:px-6">
+      <div className="flex min-h-screen w-full items-center justify-center bg-pink-100 px-4 py-6 sm:px-6">
         <div
           className="
             relative
@@ -83,7 +83,7 @@ function SignUpPage() {
             <img
               src={lgBackground}
               alt=""
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover object-center filter-[hue-rotate(248deg)_saturate(0.9)_brightness(1.02)]"
             />
           </picture>
 
@@ -113,8 +113,10 @@ function SignUpPage() {
                 className="
                   rounded-3xl
                   border-2
-                  border-[#65B82E]
-                  bg-white
+                  border-[#F472B6]/30
+                  bg-linear-to-b
+                  from-[#FFF5F8]
+                  to-[#F0F9FF]
                   w-full
                   px-5
                   py-6
@@ -134,7 +136,7 @@ function SignUpPage() {
                   className="
                     text-xl
                     font-semibold
-                    text-[#111111]
+                    text-[#1E293B]
                     sm:text-2xl
                     xl:text-3xl
                   "
@@ -180,19 +182,19 @@ function SignUpPage() {
                           items-center
                           rounded-2xl
                           border-2
-                          border-[#8B6BB1]
+                          border-[#F472B6]/40
                           bg-white
                           pl-13
                           pr-12
                           text-left
                           text-sm
                           font-medium
-                          text-[#222222]
+                          text-[#334155]
                           outline-none
                           transition
-                          focus:border-[#65B82E]
+                          focus:border-[#38BDF8]
                           focus:ring-2
-                          focus:ring-[#65B82E]/20
+                          focus:ring-[#38BDF8]/30
                           sm:h-14
                           sm:text-[15px]
                           xl:h-15.5
@@ -208,7 +210,7 @@ function SignUpPage() {
                             top-1/2
                             size-5
                             -translate-y-1/2
-                            text-[#222222]
+                            text-[#0EA5E9]
                             transition-transform
                             duration-200
                             ${isRoleOpen ? "rotate-180" : "rotate-0"}
@@ -226,11 +228,11 @@ function SignUpPage() {
                           z-50
                           mt-2
                           overflow-hidden
-                          border
-                          rounded-lg
-                          border-[#8B6BB1]
+                          rounded-2xl
+                          border-2
+                          border-[#F472B6]/40
                           bg-white
-                          shadow-[0_8px_20px_rgba(0,0,0,0.15)]
+                          shadow-[0_8px_20px_rgba(244,114,182,0.15)]
                         "
                       >
                         {roles.map((role) => (
@@ -253,11 +255,11 @@ function SignUpPage() {
                                 text-sm
                                 font-medium
                                 transition-colors
-                                hover:bg-[#65B82E]/10
+                                hover:bg-[#F472B6]/10
                                 ${
                                   formData.role === role.value
-                                    ? "bg-[#65B82E]/10 text-[#65B82E]"
-                                    : "text-[#222222]"
+                                    ? "bg-[#F472B6]/15 text-[#EC4899]"
+                                    : "text-[#334155]"
                                 }
                               `}
                           >
@@ -293,7 +295,7 @@ function SignUpPage() {
                         w-full
                         rounded-2xl
                         border-2
-                        border-[#8B6BB1]
+                        border-[#F472B6]/40
                         bg-white
                         pl-13
                         pr-4
@@ -303,9 +305,9 @@ function SignUpPage() {
                         placeholder:text-[#222222ad]
                         outline-none
                         transition
-                        focus:border-[#65B82E]
+                        focus:border-[#38BDF8]
                         focus:ring-2
-                        focus:ring-[#65B82E]/20
+                        focus:ring-[#38BDF8]/30
                         sm:h-14
                         sm:text-[15px]
                         xl:h-15.5
@@ -338,7 +340,7 @@ function SignUpPage() {
                         w-full
                         rounded-2xl
                         border-2
-                        border-[#8B6BB1]
+                        border-[#F472B6]/40
                         bg-white
                         pl-13
                         pr-4
@@ -348,9 +350,9 @@ function SignUpPage() {
                         placeholder:text-[#222222ad]
                         outline-none
                         transition
-                        focus:border-[#65B82E]
+                        focus:border-[#38BDF8]
                         focus:ring-2
-                        focus:ring-[#65B82E]/20
+                        focus:ring-[#38BDF8]/30
                         sm:h-14
                         sm:text-[15px]
                         xl:h-15.5
@@ -382,7 +384,7 @@ function SignUpPage() {
                         w-full
                         rounded-2xl
                         border-2
-                        border-[#8B6BB1]
+                        border-[#F472B6]/40
                         bg-white
                         pl-13
                         pr-4
@@ -392,9 +394,9 @@ function SignUpPage() {
                         placeholder:text-[#222222ad]
                         outline-none
                         transition
-                        focus:border-[#65B82E]
+                        focus:border-[#38BDF8]
                         focus:ring-2
-                        focus:ring-[#65B82E]/20
+                        focus:ring-[#38BDF8]/30
                         sm:h-14
                         sm:text-[15px]
                         xl:h-15.5
@@ -413,15 +415,15 @@ function SignUpPage() {
                       items-center
                       justify-center
                       rounded-2xl
-                      bg-[#65B82E]
+                      bg-[#F472B6]
                       text-lg
                       font-semibold
                       text-white
-                      shadow-[0_4px_0_#4C9A20]
+                      shadow-[0_4px_0_#DB2777]
                       transition
-                      hover:bg-[#5DB029]
+                      hover:bg-[#EC4899]
                       active:translate-y-0.5
-                      active:shadow-[0_2px_0_#4C9A20]
+                      active:shadow-[0_2px_0_#DB2777]
                       disabled:cursor-not-allowed
                       disabled:opacity-60
                       sm:h-14
@@ -445,7 +447,7 @@ function SignUpPage() {
                     sm:text-[15px]
                   "
                 >
-                  <span className="text-[#222222]">
+                  <span className="text-[#475569]">
                     Already have an account?{" "}
                   </span>
 
@@ -453,9 +455,9 @@ function SignUpPage() {
                     to="/login"
                     className="
                       font-semibold
-                      text-[#76548F]
+                      text-[#0284C7]
                       transition-colors
-                      hover:text-[#65B82E]
+                      hover:text-[#EC4899]
                     "
                   >
                     Login

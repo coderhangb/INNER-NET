@@ -43,10 +43,10 @@ function RoleSelector({ value, onChange }) {
                 isActive
                   ? `
                     bg-linear-to-br
-                    from-[#A847F5]
-                    to-[#8E38D9]
+                    from-[#0284C7]
+                    to-[#0EA5E9]
                     text-white
-                    shadow-[0_4px_0_#7425B8]
+                    shadow-[0_4px_0_#0369A1]
                   `
                   : `
                     bg-[#F1F1F1]

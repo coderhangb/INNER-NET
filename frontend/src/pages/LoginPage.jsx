@@ -24,7 +24,7 @@ function LoginPage() {
     <>
       <AuthDecor />
 
-      <div className="flex min-h-screen w-full items-center justify-center bg-[#FFF7E3] px-4 py-6 sm:px-6">
+      <div className="flex min-h-screen w-full items-center justify-center bg-pink-100 px-4 py-6 sm:px-6">
         <div
           className="
             relative
@@ -54,7 +54,7 @@ function LoginPage() {
             <img
               src={lgBackground}
               alt=""
-              className="h-full w-full object-cover object-center"
+              className="h-full w-full object-cover object-center filter-[hue-rotate(248deg)_saturate(0.9)_brightness(1.02)]"
             />
           </picture>
 
@@ -88,7 +88,7 @@ function LoginPage() {
                   w-full
                   rounded-2xl
                   border-3
-                  border-[#65B82E]
+                  border-[#F472B6]
                   object-cover
                   shadow-md
                 "
@@ -112,14 +112,17 @@ function LoginPage() {
                 text-3xl
                 font-bold
                 leading-tight
-                drop-shadow-[0_4px_2px_rgba(0,0,0,0.25)]
+                text-[#334155]
+                drop-shadow-[0_4px_2px_rgba(255,255,255,0.8)]
                 sm:text-4xl
                 lg:text-4xl
                 xl:text-5xl
               "
               >
-                Welcome Back to{" "}
-                <span className="whitespace-nowrap">INNER-NET</span>
+                Welcome Back to <br />
+                <span className="whitespace-nowrap text-[#0284C7]">
+                  INNER-NET
+                </span>
               </h1>
 
               <div
@@ -127,7 +130,11 @@ function LoginPage() {
                   mt-6
                   w-full
                   rounded-3xl
-                  bg-white
+                  border-2
+                  border-[#F472B6]/30
+                  bg-linear-to-b
+                  from-[#FFF5F8]
+                  to-[#F0F9FF]
                   px-5
                   py-6
                   shadow-[0_8px_20px_rgba(0,0,0,0.12)]
@@ -148,7 +155,7 @@ function LoginPage() {
                       mb-5
                       text-xl
                       font-semibold
-                      text-[#111111]
+                      text-[#1E293B]
                       sm:text-2xl
                       xl:text-3xl
                     "
@@ -184,7 +191,7 @@ function LoginPage() {
                         w-full
                         rounded-2xl
                         border-2
-                        border-[#8B6BB1]
+                        border-[#F472B6]/40
                         bg-white
                         pl-13
                         pr-4
@@ -194,9 +201,9 @@ function LoginPage() {
                         placeholder:text-[#222222ad]
                         outline-none
                         transition
-                        focus:border-[#65B82E]
+                        focus:border-[#38BDF8]
                         focus:ring-2
-                        focus:ring-[#65B82E]/20
+                        focus:ring-[#38BDF8]/30
                         sm:h-14
                         sm:text-[15px]
                         xl:h-15.5
@@ -231,7 +238,7 @@ function LoginPage() {
                         w-full
                         rounded-2xl
                         border-2
-                        border-[#8B6BB1]
+                        border-[#F472B6]/40
                         bg-white
                         pl-13
                         pr-4
@@ -241,9 +248,9 @@ function LoginPage() {
                         placeholder:text-[#222222ad]
                         outline-none
                         transition
-                        focus:border-[#65B82E]
+                        focus:border-[#38BDF8]
                         focus:ring-2
-                        focus:ring-[#65B82E]/20
+                        focus:ring-[#38BDF8]/30
                         sm:h-14
                         sm:text-[15px]
                         xl:h-15.5
@@ -262,15 +269,15 @@ function LoginPage() {
                       items-center
                       justify-center
                       rounded-2xl
-                      bg-[#65B82E]
+                      bg-[#F472B6]
                       text-lg
                       font-semibold
                       text-white
-                      shadow-[0_4px_0_#4C9A20]
+                      shadow-[0_4px_0_#DB2777]
                       transition
-                      hover:bg-[#5DB029]
+                      hover:bg-[#EC4899]
                       active:translate-y-0.5
-                      active:shadow-[0_2px_0_#4C9A20]
+                      active:shadow-[0_2px_0_#DB2777]
                       disabled:cursor-not-allowed
                       disabled:opacity-60
                       sm:h-14
@@ -294,7 +301,7 @@ function LoginPage() {
                     sm:text-[15px]
                   "
                 >
-                  <span className="text-[#222222]">
+                  <span className="text-[#475569]">
                     Don't have an account?{" "}
                   </span>
 
@@ -302,9 +309,9 @@ function LoginPage() {
                     to="/signup"
                     className="
                       font-semibold
-                      text-[#76548F]
+                      text-[#0284C7]
                       transition-colors
-                      hover:text-[#65B82E]
+                      hover:text-[#EC4899]
                     "
                   >
                     Sign Up

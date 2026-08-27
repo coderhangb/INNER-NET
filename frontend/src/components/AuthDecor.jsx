@@ -3,11 +3,15 @@ import flowerDecor from "../assets/decor.png";
 function AuthDecor() {
   return (
     <>
-      <img src={flowerDecor} alt="" className="absolute w-60 top-0 left-0" />
       <img
         src={flowerDecor}
         alt=""
-        className="absolute w-60 bottom-0 right-0 rotate-180"
+        className="pointer-events-none absolute left-0 top-0 w-60 filter-[saturate(0.9)_brightness(1.05)_opacity(0.85)]"
+      />
+      <img
+        src={flowerDecor}
+        alt=""
+        className="pointer-events-none absolute bottom-0 right-0 w-60 rotate-180 filter-[saturate(0.9)_brightness(1.05)_opacity(0.85)]"
       />
     </>
   );
