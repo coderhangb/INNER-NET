@@ -33,11 +33,60 @@
 }
 
 @layer base {
+  * {
+    box-sizing: border-box;
+  }
+
   html {
     font-family: "Fredoka", sans-serif;
   }
 
   body {
-    color: white;
+    margin: 0;
+    min-width: 320px;
+    color: #334155;
+    background: #fff9f6;
+  }
+
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@layer components {
+  .app-surface {
+    background-color: #fff9f6;
+    background-image:
+      radial-gradient(circle at 10% 12%, rgba(244, 114, 182, 0.12) 0, rgba(244, 114, 182, 0.12) 2px, transparent 3px),
+      radial-gradient(circle at 88% 22%, rgba(14, 165, 233, 0.10) 0, rgba(14, 165, 233, 0.10) 2px, transparent 3px);
+    background-size: 34px 34px, 42px 42px;
+  }
+
+  .chat-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+  }
+
+  .chat-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .chat-scroll::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: #cbd5e1;
+    background-clip: padding-box;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
