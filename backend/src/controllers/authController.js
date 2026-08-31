@@ -1,6 +1,13 @@
 const User = require("../models/User.js");
 const { createToken } = require("../libs/utils.js");
 
+const cookieOptions = {
+  httpOnly: true,
+  maxAge: 1000 * 60 * 60 * 24 * 7,
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  secure: process.env.NODE_ENV === "production",
+};
+
 function handleError(error) {
   console.log(error.message);
   let err = {
@@ -41,12 +48,7 @@ async function signupPost(req, res) {
   const { fullName, email, password, role } = req.body;
   try {
     const user = await User.create({ fullName, email, password, role });
-    res.cookie("jwt", createToken(user._id), {
-      httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-      sameSite: "none",
-      secure: true,
-    });
+    res.cookie("jwt", createToken(user._id), cookieOptions);
 
     res.status(201).json({
       _id: user._id,
@@ -64,12 +66,7 @@ async function loginPost(req, res) {
   const { email, password } = req.body;
   try {
     const user = await User.login(email, password);
-    res.cookie("jwt", createToken(user._id), {
-      httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-      sameSite: "none",
-      secure: true,
-    });
+    res.cookie("jwt", createToken(user._id), cookieOptions);
     res.status(200).json({
       _id: user._id,
       fullName: user.fullName,
@@ -83,7 +80,11 @@ async function loginPost(req, res) {
 }
 
 async function logoutPost(req, res) {
-  res.cookie("jwt", "", { maxAge: 1 });
+  res.clearCookie("jwt", {
+    httpOnly: true,
+    sameSite: cookieOptions.sameSite,
+    secure: cookieOptions.secure,
+  });
   res.status(200).json({ message: "Logout success" });
 }
 

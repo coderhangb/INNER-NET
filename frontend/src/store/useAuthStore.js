@@ -2,7 +2,7 @@ import { create } from "zustand";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../libs/axios.js";
 
-export const useAuthStore = create((set, get) => ({
+export const useAuthStore = create((set) => ({
   authUser: null,
   isCheckingAuth: true,
   isSigningUp: false,
@@ -30,9 +30,10 @@ export const useAuthStore = create((set, get) => ({
       toast.success("Account created successfully!");
     } catch (error) {
       toast.error(
-        error.response.data.fullName ||
-          error.response.data.email ||
-          error.response.data.password,
+        error.response?.data?.fullName ||
+          error.response?.data?.email ||
+          error.response?.data?.password ||
+          "Unable to create your account. Please try again.",
       );
     } finally {
       set({ isSigningUp: false });
@@ -48,7 +49,11 @@ export const useAuthStore = create((set, get) => ({
       // toast from react hot toast
       toast.success("Login successfully!");
     } catch (error) {
-      toast.error(error.response.data.email || error.response.data.password);
+      toast.error(
+        error.response?.data?.email ||
+          error.response?.data?.password ||
+          "Unable to log in. Please check your connection.",
+      );
     } finally {
       set({ isLoggingIn: false });
     }
@@ -61,7 +66,7 @@ export const useAuthStore = create((set, get) => ({
 
       // toast from react hot toast
       toast.success(res.data.message);
-    } catch (error) {
+    } catch {
       toast.error("Logout fail");
     }
   },
