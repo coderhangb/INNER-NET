@@ -104,7 +104,8 @@ function ChatPage() {
       setIsComplete(Boolean(response.data.complete));
     } catch (error) {
       const friendlyMessage =
-        error.response?.data?.message || "INNER-NET could not reply just now. Please try again.";
+        error.response?.data?.message ||
+        "INNER-NET could not reply just now. Please try again.";
       setErrorMessage(friendlyMessage);
       toast.error(friendlyMessage);
     } finally {
@@ -119,11 +120,19 @@ function ChatPage() {
     }
   };
 
-  const learnerMessageCount = messages.filter((item) => item.role === "user").length;
-  const coachMessageCount = messages.filter((item) => item.role === "assistant").length;
+  const learnerMessageCount = messages.filter(
+    (item) => item.role === "user",
+  ).length;
+  const coachMessageCount = messages.filter(
+    (item) => item.role === "assistant",
+  ).length;
 
   const learningSteps = [
-    { label: "Share the problem", done: learnerMessageCount > 0, active: learnerMessageCount === 0 },
+    {
+      label: "Share the problem",
+      done: learnerMessageCount > 0,
+      active: learnerMessageCount === 0,
+    },
     {
       label: "Work through the clues",
       done: isComplete,
@@ -133,10 +142,10 @@ function ChatPage() {
   ];
 
   return (
-    <div className="app-surface flex min-h-screen flex-col text-[#334155]">
+    <div className="app-surface flex h-screen flex-col overflow-hidden text-[#334155]">
       <AppHeader />
 
-      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-3 py-4 sm:px-6 sm:py-6 lg:px-8">
+      <main className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col overflow-hidden px-3 py-4 sm:px-6 sm:py-6 lg:px-8">
         <div className="mb-4 flex items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
             <Link
@@ -147,8 +156,12 @@ function ChatPage() {
               <ArrowLeft className="size-5" aria-hidden="true" />
             </Link>
             <div className="min-w-0">
-              <h1 className="truncate text-xl font-bold text-[#334155] sm:text-2xl">Learning chat</h1>
-              <p className="truncate text-xs text-[#64748B] sm:text-sm">Think out loud. Your coach will guide the next step.</p>
+              <h1 className="truncate text-xl font-bold text-[#334155] sm:text-2xl">
+                Learning chat
+              </h1>
+              <p className="truncate text-xs text-[#64748B] sm:text-sm">
+                Think out loud. Your coach will guide the next step.
+              </p>
             </div>
           </div>
 
@@ -163,7 +176,7 @@ function ChatPage() {
         </div>
 
         <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[250px_minmax(0,1fr)]">
-          <aside className="hidden rounded-[1.5rem] border border-white bg-white/75 p-5 shadow-[0_12px_35px_rgba(51,65,85,0.07)] backdrop-blur lg:block">
+          <aside className="hidden rounded-3xl border border-[#E2E8F0] bg-white/75 p-5 shadow-[0_12px_35px_rgba(51,65,85,0.07)] backdrop-blur lg:block">
             <div className="flex items-center gap-2 text-sm font-bold text-[#334155]">
               <Brain className="size-5 text-[#0284C7]" aria-hidden="true" />
               Your learning path
@@ -173,7 +186,10 @@ function ChatPage() {
               {learningSteps.map((step, index) => (
                 <li key={step.label} className="relative flex gap-3">
                   {index < learningSteps.length - 1 && (
-                    <span className="absolute left-3.5 top-8 h-6 w-px bg-[#E2E8F0]" aria-hidden="true" />
+                    <span
+                      className="absolute left-3.5 top-8 h-6 w-px bg-[#E2E8F0]"
+                      aria-hidden="true"
+                    />
                   )}
                   <span
                     className={`grid size-7 shrink-0 place-items-center rounded-full text-xs font-bold ${
@@ -184,13 +200,23 @@ function ChatPage() {
                           : "bg-[#F1F5F9] text-[#94A3B8]"
                     }`}
                   >
-                    {step.done ? <CheckCircle2 className="size-4" aria-hidden="true" /> : index + 1}
+                    {step.done ? (
+                      <CheckCircle2 className="size-4" aria-hidden="true" />
+                    ) : (
+                      index + 1
+                    )}
                   </span>
                   <div>
-                    <p className={`text-sm font-semibold ${step.active || step.done ? "text-[#334155]" : "text-[#94A3B8]"}`}>
+                    <p
+                      className={`text-sm font-semibold ${step.active || step.done ? "text-[#334155]" : "text-[#94A3B8]"}`}
+                    >
                       {step.label}
                     </p>
-                    {step.active && <p className="mt-1 text-xs leading-5 text-[#64748B]">You are here</p>}
+                    {step.active && (
+                      <p className="mt-1 text-xs leading-5 text-[#64748B]">
+                        You are here
+                      </p>
+                    )}
                   </div>
                 </li>
               ))}
@@ -202,12 +228,16 @@ function ChatPage() {
                 Little reminder
               </div>
               <p className="mt-2 text-xs leading-5 text-[#9A3412]/80">
-                It is okay not to know yet. Tell the coach which part feels confusing.
+                It is okay not to know yet. Tell the coach which part feels
+                confusing.
               </p>
             </div>
           </aside>
 
-          <section className="flex min-h-[calc(100vh-8.75rem)] flex-col overflow-hidden rounded-[1.5rem] border border-[#E2E8F0] bg-white shadow-[0_18px_50px_rgba(51,65,85,0.09)] sm:min-h-[calc(100vh-10rem)]" aria-label="Chat with INNER-NET">
+          <section
+            className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white shadow-[0_18px_50px_rgba(51,65,85,0.09)]"
+            aria-label="Chat with INNER-NET"
+          >
             <div className="flex items-center justify-between border-b border-[#E2E8F0] px-4 py-3.5 sm:px-5">
               <div className="flex items-center gap-3">
                 <div className="relative grid size-10 place-items-center rounded-2xl bg-[#E0F2FE] text-[#0284C7]">
@@ -215,7 +245,9 @@ function ChatPage() {
                   <span className="absolute -bottom-0.5 -right-0.5 size-3 rounded-full border-2 border-white bg-[#34D399]" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-[#334155]">INNER-NET Coach</p>
+                  <p className="text-sm font-bold text-[#334155]">
+                    INNER-NET Coach
+                  </p>
                   <p className="text-xs text-[#10B981]">Ready to help</p>
                 </div>
               </div>
@@ -227,10 +259,16 @@ function ChatPage() {
               )}
             </div>
 
-            <div className="chat-scroll flex-1 overflow-y-auto bg-[#FFFCFA] px-3 py-5 sm:px-5 sm:py-6" aria-live="polite">
+            <div
+              className="chat-scroll min-h-0 flex-1 overflow-y-auto bg-[#FFFCFA] px-3 py-5 sm:px-5 sm:py-6"
+              aria-live="polite"
+            >
               <div className="mx-auto max-w-3xl space-y-5">
                 {messages.map((item) => (
-                  <div key={item.id} className={`flex gap-2.5 ${item.role === "user" ? "justify-end" : "justify-start"}`}>
+                  <div
+                    key={item.id}
+                    className={`flex gap-2.5 ${item.role === "user" ? "justify-end" : "justify-start"}`}
+                  >
                     {item.role === "assistant" && (
                       <div className="mt-1 grid size-8 shrink-0 place-items-center rounded-xl bg-[#E0F2FE] text-[#0284C7]">
                         <Sparkles className="size-4" aria-hidden="true" />
@@ -272,8 +310,13 @@ function ChatPage() {
                       <Sparkles className="size-4" aria-hidden="true" />
                     </div>
                     <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-md border border-[#E2E8F0] bg-white px-4 py-3 text-[#94A3B8] shadow-sm">
-                      <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
-                      <span className="text-xs font-medium">Thinking about your idea…</span>
+                      <LoaderCircle
+                        className="size-4 animate-spin"
+                        aria-hidden="true"
+                      />
+                      <span className="text-xs font-medium">
+                        Thinking about your idea…
+                      </span>
                     </div>
                   </div>
                 )}
@@ -288,7 +331,10 @@ function ChatPage() {
               </div>
             </div>
 
-            <form onSubmit={sendMessage} className="border-t border-[#E2E8F0] bg-white p-3 sm:p-4">
+            <form
+              onSubmit={sendMessage}
+              className="border-t border-[#E2E8F0] bg-white p-3 sm:p-4"
+            >
               <div className="mx-auto max-w-3xl">
                 <div className="flex items-end gap-2 rounded-2xl border-2 border-[#E2E8F0] bg-[#F8FAFC] p-2 transition focus-within:border-[#7DD3FC] focus-within:ring-4 focus-within:ring-[#E0F2FE]">
                   <textarea
@@ -308,7 +354,11 @@ function ChatPage() {
                     className="grid size-11 shrink-0 place-items-center rounded-xl bg-[#0284C7] text-white shadow-[0_3px_0_#0369A1] transition hover:bg-[#0369A1] active:translate-y-0.5 active:shadow-[0_1px_0_#0369A1] disabled:cursor-not-allowed disabled:bg-[#CBD5E1] disabled:shadow-none"
                     aria-label="Send message"
                   >
-                    {isSending ? <LoaderCircle className="size-5 animate-spin" /> : <Send className="size-5" />}
+                    {isSending ? (
+                      <LoaderCircle className="size-5 animate-spin" />
+                    ) : (
+                      <Send className="size-5" />
+                    )}
                   </button>
                 </div>
                 <p className="mt-2 text-center text-[11px] text-[#94A3B8]">
