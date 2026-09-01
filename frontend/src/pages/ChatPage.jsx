@@ -13,6 +13,7 @@ import toast from "react-hot-toast";
 import { Link, useLocation } from "react-router";
 import AppHeader from "../components/AppHeader";
 import AppFooter from "../components/AppFooter";
+import CompleteBanner from "../components/CompleteBanner";
 import { axiosInstance } from "../libs/axios";
 import { useAuthStore } from "../store/useAuthStore";
 
@@ -52,6 +53,7 @@ function ChatPage() {
   const [message, setMessage] = useState(starterPrompt);
   const [isSending, setIsSending] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const messageEndRef = useRef(null);
@@ -75,6 +77,7 @@ function ChatPage() {
     setMessages([welcomeMessage]);
     setMessage("");
     setIsComplete(false);
+    setShowCompleteModal(false);
     setErrorMessage("");
 
     requestAnimationFrame(() => {
@@ -115,7 +118,14 @@ function ChatPage() {
         },
       ]);
 
-      setIsComplete(Boolean(response.data.complete));
+      const isDone =
+        response.data?.complete === true || response.data?.complete === "true";
+
+      setIsComplete(isDone);
+
+      if (isDone) {
+        setShowCompleteModal(true);
+      }
     } catch (error) {
       const friendlyMessage =
         error.response?.data?.message ||
@@ -370,6 +380,12 @@ function ChatPage() {
                 <div ref={messageEndRef} />
               </div>
             </div>
+
+            <CompleteBanner
+              isOpen={showCompleteModal}
+              onClose={() => setShowCompleteModal(false)}
+              onStartNewChat={startNewChat}
+            />
 
             <form
               onSubmit={sendMessage}
