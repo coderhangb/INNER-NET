@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 import AppHeader from "../components/AppHeader";
+import AppFooter from "../components/AppFooter";
 import { useAuthStore } from "../store/useAuthStore";
 
 const starters = [
@@ -194,6 +195,8 @@ function HomePage() {
           ))}
         </section>
       </main>
+
+      <AppFooter />
     </div>
   );
 }

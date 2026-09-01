@@ -16,7 +16,7 @@ function AppHeader() {
     }`;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/80 bg-[#FFF9F6]/90 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-[#E2E8F0] bg-[#FFF9F6]/90 backdrop-blur-xl">
       <div className="mx-auto flex h-18 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <NavLink
           to="/"
