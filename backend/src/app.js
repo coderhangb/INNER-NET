@@ -1,9 +1,9 @@
+require("dotenv").config();
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const path = require("path");
 const authRoutes = require("./routes/authRoute.js");
-require("dotenv").config();
 
 const llmRoutes = require("./routes/llmRoute.js");
 
@@ -13,6 +13,7 @@ const connectDB = require("./libs/db.js");
 
 const PORT = process.env.PORT || 3000;
 
+app.set("trust proxy", 1);
 app.use(
   cors({
     origin: process.env.CLIENT_URL || true,

@@ -1,11 +1,29 @@
 const User = require("../models/User.js");
 const { createToken } = require("../libs/utils.js");
 
-const cookieOptions = {
-  httpOnly: true,
-  maxAge: 1000 * 60 * 60 * 24 * 7,
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-  secure: process.env.NODE_ENV === "production",
+const getCookieOptions = (req) => {
+  const host = req?.headers?.host || "";
+  const isLocal = host.includes("localhost") || host.includes("127.0.0.1");
+
+  if (isLocal) {
+    return {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      secure: false,
+      sameSite: "lax",
+    };
+  }
+
+  const forwardedProto = req?.headers["x-forwarded-proto"];
+  const isTunnelSecure =
+    req?.secure || (forwardedProto && forwardedProto.includes("https"));
+
+  return {
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+    secure: Boolean(isTunnelSecure),
+    sameSite: isTunnelSecure ? "none" : "lax",
+  };
 };
 
 function handleError(error) {
@@ -48,7 +66,8 @@ async function signupPost(req, res) {
   const { fullName, email, password, role } = req.body;
   try {
     const user = await User.create({ fullName, email, password, role });
-    res.cookie("jwt", createToken(user._id), cookieOptions);
+
+    res.cookie("jwt", createToken(user._id), getCookieOptions(req));
 
     res.status(201).json({
       _id: user._id,
@@ -66,7 +85,9 @@ async function loginPost(req, res) {
   const { email, password } = req.body;
   try {
     const user = await User.login(email, password);
-    res.cookie("jwt", createToken(user._id), cookieOptions);
+
+    res.cookie("jwt", createToken(user._id), getCookieOptions(req));
+
     res.status(200).json({
       _id: user._id,
       fullName: user.fullName,
@@ -80,11 +101,7 @@ async function loginPost(req, res) {
 }
 
 async function logoutPost(req, res) {
-  res.clearCookie("jwt", {
-    httpOnly: true,
-    sameSite: cookieOptions.sameSite,
-    secure: cookieOptions.secure,
-  });
+  res.clearCookie("jwt", getCookieOptions(req));
   res.status(200).json({ message: "Logout success" });
 }
 
