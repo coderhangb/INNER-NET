@@ -10,18 +10,14 @@ import {
   Sparkles,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { Link, useLocation } from "react-router";
+import { Link } from "react-router";
 import AppHeader from "../components/AppHeader";
 import AppFooter from "../components/AppFooter";
 import CompleteBanner from "../components/CompleteBanner";
 import { axiosInstance } from "../libs/axios";
 import { useAuthStore } from "../store/useAuthStore";
 
-const suggestions = [
-  "I need help with a math problem.",
-  "Can you help me understand a science idea?",
-  "I want to check if my thinking makes sense.",
-];
+const STARTER_QUESTION = "What makes it rain?";
 
 function makeConversationId() {
   if (typeof crypto !== "undefined" && crypto.randomUUID) {
@@ -32,25 +28,22 @@ function makeConversationId() {
 }
 
 function ChatPage() {
-  const location = useLocation();
   const authUser = useAuthStore((state) => state.authUser);
 
   const firstName = authUser?.fullName?.trim()?.split(/\s+/)[0] || "there";
-
-  const starterPrompt = location.state?.starterPrompt || "";
 
   const welcomeMessage = useMemo(
     () => ({
       id: "welcome",
       role: "assistant",
-      content: `Hi, ${firstName}! 👋 What are you working on today? Tell me the question and what you have tried so far.`,
+      content: `Hi, ${firstName}! 👋 Let's explore this question together.`,
     }),
     [firstName],
   );
 
   const [conversationId, setConversationId] = useState(makeConversationId);
   const [messages, setMessages] = useState([welcomeMessage]);
-  const [message, setMessage] = useState(starterPrompt);
+  const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
@@ -58,6 +51,7 @@ function ChatPage() {
 
   const messageEndRef = useRef(null);
   const textareaRef = useRef(null);
+  const starterQuestionSentRef = useRef(false);
 
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({
@@ -66,29 +60,12 @@ function ChatPage() {
     });
   }, [messages, isSending]);
 
-  useEffect(() => {
-    if (starterPrompt) {
-      textareaRef.current?.focus();
-    }
-  }, [starterPrompt]);
-
-  const startNewChat = () => {
-    setConversationId(makeConversationId());
-    setMessages([welcomeMessage]);
-    setMessage("");
-    setIsComplete(false);
-    setShowCompleteModal(false);
-    setErrorMessage("");
-
-    requestAnimationFrame(() => {
-      textareaRef.current?.focus();
-    });
-  };
-
-  const sendMessage = async (event) => {
+  const sendMessage = async (event, providedMessage) => {
     event?.preventDefault();
 
-    const cleanMessage = message.trim();
+    const cleanMessage = (
+      providedMessage !== undefined ? providedMessage : message
+    ).trim();
 
     if (!cleanMessage || isSending) return;
 
@@ -99,7 +76,11 @@ function ChatPage() {
     };
 
     setMessages((current) => [...current, userMessage]);
-    setMessage("");
+
+    if (providedMessage === undefined) {
+      setMessage("");
+    }
+
     setErrorMessage("");
     setIsSending(true);
 
@@ -138,6 +119,32 @@ function ChatPage() {
     }
   };
 
+  useEffect(() => {
+    if (starterQuestionSentRef.current) return;
+
+    starterQuestionSentRef.current = true;
+
+    sendMessage(undefined, STARTER_QUESTION);
+  }, []);
+
+  const startNewChat = () => {
+    setConversationId(makeConversationId());
+
+    setMessages([welcomeMessage]);
+
+    setMessage("");
+
+    setIsComplete(false);
+
+    setShowCompleteModal(false);
+
+    setErrorMessage("");
+
+    requestAnimationFrame(() => {
+      textareaRef.current?.focus();
+    });
+  };
+
   const handleKeyDown = (event) => {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
@@ -155,7 +162,7 @@ function ChatPage() {
 
   const learningSteps = [
     {
-      label: "Share the problem",
+      label: "Explore the question",
       done: learnerMessageCount > 0,
       active: learnerMessageCount === 0,
     },
@@ -334,24 +341,6 @@ function ChatPage() {
                   </div>
                 ))}
 
-                {messages.length === 1 && (
-                  <div className="grid gap-2 pt-1 sm:grid-cols-3">
-                    {suggestions.map((suggestion) => (
-                      <button
-                        key={suggestion}
-                        type="button"
-                        onClick={() => {
-                          setMessage(suggestion);
-                          textareaRef.current?.focus();
-                        }}
-                        className="rounded-2xl border border-[#E2E8F0] bg-white p-3 text-left text-xs font-medium leading-5 text-[#64748B] transition hover:border-[#7DD3FC] hover:bg-[#F0F9FF] hover:text-[#0369A1]"
-                      >
-                        {suggestion}
-                      </button>
-                    ))}
-                  </div>
-                )}
-
                 {isSending && (
                   <div className="flex items-center gap-2.5">
                     <div className="grid size-8 shrink-0 place-items-center rounded-xl bg-[#E0F2FE] text-[#0284C7]">
@@ -400,7 +389,7 @@ function ChatPage() {
                     onKeyDown={handleKeyDown}
                     rows="1"
                     maxLength="2000"
-                    placeholder="Tell me the question and what you tried…"
+                    placeholder="Tell me what you think…"
                     className="max-h-32 min-h-11 flex-1 resize-none bg-transparent px-2 py-2.5 text-sm leading-6 text-[#334155] outline-none placeholder:text-[#94A3B8] sm:text-[15px]"
                     aria-label="Message to INNER-NET"
                   />
