@@ -3,7 +3,8 @@ const { createToken } = require("../libs/utils.js");
 
 const getCookieOptions = (req) => {
   const host = req?.headers?.host || "";
-  const isLocal = host.includes("localhost") || host.includes("127.0.0.1");
+  const isLocal =
+    host.includes("localhost") || host.includes("127.0.0.1");
 
   if (isLocal) {
     return {
@@ -14,9 +15,10 @@ const getCookieOptions = (req) => {
     };
   }
 
-  const forwardedProto = req?.headers["x-forwarded-proto"];
+  const forwardedProto = req?.headers?.["x-forwarded-proto"];
   const isTunnelSecure =
-    req?.secure || (forwardedProto && forwardedProto.includes("https"));
+    req?.secure ||
+    (forwardedProto && forwardedProto.includes("https"));
 
   return {
     httpOnly: true,
@@ -28,14 +30,15 @@ const getCookieOptions = (req) => {
 
 function handleError(error) {
   console.log(error.message);
-  let err = {
+
+  const err = {
     fullName: "",
     email: "",
     password: "",
     role: "",
   };
 
-  // incorrect email/password
+  // Sai email hoặc mật khẩu.
   if (
     error.message === "Incorrect email" ||
     error.message === "Incorrect password"
@@ -45,17 +48,23 @@ function handleError(error) {
     return err;
   }
 
-  // duplicate error code
+  // Email đã tồn tại.
   if (error.code === 11000) {
     err.email =
       "This email is already registered. Please log in or use a different email.";
     return err;
   }
 
-  // validation error
-  if (error.message.includes("User validation failed")) {
-    Object.values(error.errors).forEach(({ properties }) => {
-      err[properties.path] = properties.message;
+  // Dữ liệu không hợp lệ theo schema.
+  if (error.name === "ValidationError" && error.errors) {
+    Object.values(error.errors).forEach((fieldError) => {
+      const path = fieldError.properties?.path || fieldError.path;
+      const message =
+        fieldError.properties?.message || fieldError.message;
+
+      if (Object.prototype.hasOwnProperty.call(err, path)) {
+        err[path] = message;
+      }
     });
   }
 
@@ -64,45 +73,81 @@ function handleError(error) {
 
 async function signupPost(req, res) {
   const { fullName, email, password, role } = req.body;
+
   try {
-    const user = await User.create({ fullName, email, password, role });
+    const user = await User.create({
+      fullName,
+      email,
+      password,
+      role,
+    });
 
     res.cookie("jwt", createToken(user._id), getCookieOptions(req));
 
-    res.status(201).json({
+    return res.status(201).json({
       _id: user._id,
       fullName: user.fullName,
       email: user.email,
       role: user.role,
     });
   } catch (error) {
-    const err = handleError(error);
-    res.status(400).json(err);
+    if (error.code === 11000) {
+      return res.status(409).json(handleError(error));
+    }
+
+    if (error.name === "ValidationError") {
+      return res.status(400).json(handleError(error));
+    }
+
+    console.error("Signup failed:", error);
+
+    return res.status(500).json({
+      message: "Server error",
+    });
   }
 }
 
 async function loginPost(req, res) {
   const { email, password } = req.body;
+
   try {
     const user = await User.login(email, password);
 
     res.cookie("jwt", createToken(user._id), getCookieOptions(req));
 
-    res.status(200).json({
+    return res.status(200).json({
       _id: user._id,
       fullName: user.fullName,
       email: user.email,
       role: user.role,
     });
   } catch (error) {
-    const err = handleError(error);
-    res.status(400).json(err);
+    if (
+      error.message === "Incorrect email" ||
+      error.message === "Incorrect password"
+    ) {
+      return res.status(401).json(handleError(error));
+    }
+
+    console.error("Login failed:", error);
+
+    return res.status(500).json({
+      message: "Server error",
+    });
   }
 }
 
 async function logoutPost(req, res) {
-  res.clearCookie("jwt", getCookieOptions(req));
-  res.status(200).json({ message: "Logout success" });
+  const cookieOptions = getCookieOptions(req);
+
+  // Khi xóa cookie, không truyền thời gian sống.
+  delete cookieOptions.maxAge;
+
+  res.clearCookie("jwt", cookieOptions);
+
+  return res.status(200).json({
+    message: "Logout success",
+  });
 }
 
 module.exports = {
