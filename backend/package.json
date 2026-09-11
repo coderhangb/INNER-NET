@@ -10,7 +10,9 @@
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "check:transactions": "node scripts/checkTransactions.js"
+    "check:transactions": "node scripts/checkTransactions.js",
+    "seed:cards:demo": "node scripts/seedCardDemo.js",
+    "check:cards": "node scripts/checkCardCollection.js"
   },
   "dependencies": {
     "@google/genai": "^2.17.1",

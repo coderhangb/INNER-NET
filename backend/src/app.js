@@ -8,6 +8,8 @@ const createRequestSecurity = require(
   "./middlewares/requestSecurity.js",
 );
 
+const cardRoutes = require("./routes/cardRoute.js");
+
 const app = express();
 
 const {
@@ -45,6 +47,7 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/llm", llmRoutes);
+app.use("/api/cards", cardRoutes);
 
 // API không tồn tại phải trả JSON 404,
 // không trả nhầm index.html của frontend.

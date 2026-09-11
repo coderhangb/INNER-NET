@@ -1,6 +1,6 @@
-import { Home, LogOut, MessageCircle, Sparkles } from "lucide-react";
 import { NavLink } from "react-router";
 import { useAuthStore } from "../store/useAuthStore";
+import { Home, LogOut, MessageCircle, Sparkles, Layers } from "lucide-react";
 
 function AppHeader() {
   const { authUser, logout } = useAuthStore();
@@ -42,6 +42,10 @@ function AppHeader() {
           <NavLink to="/chat" className={navClass}>
             <MessageCircle className="size-4" aria-hidden="true" />
             <span className="hidden sm:inline">Learn</span>
+          </NavLink>
+          <NavLink to="/collection" className={navClass} aria-label="Bộ sưu tập">
+            <Layers className="size-4" aria-hidden="true" />
+            <span className="hidden sm:inline">Bộ sưu tập</span>
           </NavLink>
         </nav>
 
