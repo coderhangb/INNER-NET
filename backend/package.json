@@ -12,7 +12,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "check:transactions": "node scripts/checkTransactions.js",
     "seed:cards:demo": "node scripts/seedCardDemo.js",
-    "check:cards": "node scripts/checkCardCollection.js"
+    "check:cards": "node scripts/checkCardCollection.js",
+    "indexes:rewards": "node scripts/createRewardIndexes.js",
+    "test:rewards": "node --test tests/rewards/math.test.js",
+    "test:rewards:integration": "node --test tests/rewards/integration.test.js",
+    "check:rewards": "node scripts/checkRewardApi.js"
   },
   "dependencies": {
     "@google/genai": "^2.17.1",

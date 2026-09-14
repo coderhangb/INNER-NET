@@ -9,6 +9,8 @@ import LoginPage from "./pages/LoginPage.jsx";
 import { useAuthStore } from "./store/useAuthStore.js";
 import CollectionPage from "./pages/CollectionPage.jsx";
 
+import ActivityTracker from "./components/ActivityTracker.jsx";
+
 function App() {
   const { authUser, isCheckingAuth, checkAuth } = useAuthStore();
 
@@ -25,6 +27,7 @@ function App() {
 
   return (
     <>
+      <ActivityTracker />
       <Routes>
         <Route
           path="/"

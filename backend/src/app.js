@@ -1,3 +1,5 @@
+const { activityRoutes, rewardRoutes } = require("./routes/activityRoute.js");
+
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const path = require("path");
@@ -48,6 +50,10 @@ app.get("/api/health", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/llm", llmRoutes);
 app.use("/api/cards", cardRoutes);
+
+app.use("/api/activity", activityRoutes);
+app.use("/api/rewards", rewardRoutes);
+
 
 // API không tồn tại phải trả JSON 404,
 // không trả nhầm index.html của frontend.
