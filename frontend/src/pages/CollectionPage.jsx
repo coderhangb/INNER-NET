@@ -15,6 +15,34 @@ function CollectionContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selected, setSelected] = useState(null);
+
+  useEffect(() => {
+  function onRewardGranted() {
+    setLoading(true);
+    setError("");
+    setSelected(null);
+
+    // Quay về trang đầu để tránh dùng cursor của danh sách cũ.
+    setCursor(null);
+    setPrevious([]);
+
+    // Tải lại kể cả khi đang ở trang đầu.
+    setReload(value => value + 1);
+  }
+
+  window.addEventListener(
+    "innernet:reward-granted",
+    onRewardGranted
+  );
+
+  return () => {
+    window.removeEventListener(
+      "innernet:reward-granted",
+      onRewardGranted
+    );
+  };
+}, []);
+
   useEffect(() => {
     const controller = new AbortController();
     let active = true;
