@@ -12,6 +12,8 @@ const createRequestSecurity = require(
 
 const cardRoutes = require("./routes/cardRoute.js");
 
+const tradeRoutes = require("./routes/tradeRoute.js");
+
 const app = express();
 
 const {
@@ -53,7 +55,7 @@ app.use("/api/cards", cardRoutes);
 
 app.use("/api/activity", activityRoutes);
 app.use("/api/rewards", rewardRoutes);
-
+app.use("/api/trades", tradeRoutes);
 
 // API không tồn tại phải trả JSON 404,
 // không trả nhầm index.html của frontend.

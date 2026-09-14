@@ -11,6 +11,8 @@ import CollectionPage from "./pages/CollectionPage.jsx";
 
 import ActivityTracker from "./components/ActivityTracker.jsx";
 
+import TradePage from "./pages/TradePage.jsx";
+
 function App() {
   const { authUser, isCheckingAuth, checkAuth } = useAuthStore();
 
@@ -29,6 +31,10 @@ function App() {
     <>
       <ActivityTracker />
       <Routes>
+        <Route 
+          path="/trades" element={<TradePage />} 
+        />
+
         <Route
           path="/"
           element={authUser ? <HomePage /> : <Navigate to={"/login"} />}

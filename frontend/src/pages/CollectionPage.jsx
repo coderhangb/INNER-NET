@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import AppHeader from "../components/AppHeader.jsx";
 import { axiosInstance } from "../libs/axios.js";
 import { useAuthStore } from "../store/useAuthStore.js";
+import { Link } from "react-router";
+
+
 const rarities = { common: "Thường", uncommon: "Ít gặp", rare: "Hiếm", epic: "Sử thi", legendary: "Huyền thoại" };
 const statuses = { available: "Sẵn sàng", trade_locked: "Đang trao đổi", export_locked: "Đang khóa để xuất", exported: "Đã xuất" };
 const colors = { common: "#64748b", uncommon: "#16a34a", rare: "#0284c7", epic: "#9333ea", legendary: "#d97706" };
@@ -69,7 +72,18 @@ function CollectionContent() {
     <>
       <AppHeader />
       <main className="mx-auto max-w-6xl px-4 py-8 text-slate-700">
-        <h1 className="text-3xl font-bold">Bộ sưu tập của bạn</h1>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <h1 className="text-3xl font-bold">
+            Bộ sưu tập của bạn
+          </h1>
+
+          <Link
+            to="/trades"
+            className="inline-flex items-center justify-center rounded-xl bg-sky-600 px-5 py-3 font-semibold text-white shadow-sm transition hover:bg-sky-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+          >
+            Trao đổi card
+          </Link>
+        </div>
         <p className="mt-2 text-slate-500">Mỗi ô là một bản card riêng, có mã riêng.</p>
         <div className="my-6 flex flex-wrap items-center gap-3">
           <label>Độ hiếm{" "}<select className="rounded-lg border p-2" value={rarity} onChange={e => filter(setRarity, e.target.value)}>
