@@ -7,3 +7,13 @@ export const axiosInstance = axios.create({
       : "",
   withCredentials: true,
 });
+
+axiosInstance.interceptors.request.use((config) => {
+  const method = (config.method || "get").toUpperCase();
+
+  if (!["GET", "HEAD", "OPTIONS"].includes(method)) {
+    config.headers["X-CSRF-Protection"] = "1";
+  }
+
+  return config;
+});

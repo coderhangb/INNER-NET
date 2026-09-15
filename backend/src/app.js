@@ -1,41 +1,110 @@
-require("dotenv").config();
+const { activityRoutes, rewardRoutes } = require("./routes/activityRoute.js");
+
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const cors = require("cors");
 const path = require("path");
-const authRoutes = require("./routes/authRoute.js");
 
+const authRoutes = require("./routes/authRoute.js");
 const llmRoutes = require("./routes/llmRoute.js");
+const createRequestSecurity = require(
+  "./middlewares/requestSecurity.js",
+);
+
+const cardRoutes = require("./routes/cardRoute.js");
+
+const tradeRoutes = require("./routes/tradeRoute.js");
 
 const app = express();
 
-const connectDB = require("./libs/db.js");
+const {
+  originGuard,
+  corsMiddleware,
+  csrfGuard,
+} = createRequestSecurity();
 
-const PORT = process.env.PORT || 3000;
+// Chỉ bật nếu triển khai sau một reverse proxy tin cậy.
+if (process.env.TRUST_PROXY === "1") {
+  app.set("trust proxy", 1);
+}
 
-app.set("trust proxy", 1);
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL || true,
-    credentials: true,
-  }),
-);
+app.use(originGuard);
+app.use(corsMiddleware);
+
 app.use(cookieParser());
-app.use(express.json());
 
-// Routes API
-app.use("/public", express.static(path.join(__dirname, "public")));
+// Bảo vệ toàn bộ API, gồm cả login, signup và logout.
+app.use("/api", csrfGuard);
+
+// Giới hạn kích thước JSON để tránh body quá lớn.
+app.use(express.json({ limit: "32kb" }));
+
+app.use(
+  "/public",
+  express.static(path.join(__dirname, "public")),
+);
+
+app.get("/api/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+  });
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/llm", llmRoutes);
+app.use("/api/cards", cardRoutes);
+
+app.use("/api/activity", activityRoutes);
+app.use("/api/rewards", rewardRoutes);
+app.use("/api/trades", tradeRoutes);
+
+// API không tồn tại phải trả JSON 404,
+// không trả nhầm index.html của frontend.
+app.use("/api", (req, res) => {
+  res.status(404).json({
+    message: "API endpoint not found",
+  });
+});
 
 const distPath = path.join(__dirname, "../../frontend/dist");
+
 app.use(express.static(distPath));
 
-app.get("/*splat", (req, res) => {
-  res.sendFile(path.join(distPath, "index.html"));
+// Dự án đang dùng Express 5.
+app.get("/{*splat}", (req, res, next) => {
+  res.sendFile(path.join(distPath, "index.html"), (error) => {
+    if (error) next(error);
+  });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
-  connectDB();
+// Middleware lỗi phải đặt cuối cùng.
+app.use((error, req, res, next) => {
+  if (res.headersSent) {
+    return next(error);
+  }
+
+  if (error.type === "entity.parse.failed") {
+    return res.status(400).json({
+      message: "Invalid JSON body",
+    });
+  }
+
+  if (error.type === "entity.too.large") {
+    return res.status(413).json({
+      message: "Request body is too large",
+    });
+  }
+
+  if (error.status === 404) {
+    return res.status(404).json({
+      message: "Resource not found",
+    });
+  }
+
+  console.error("Unhandled request error:", error);
+
+  return res.status(500).json({
+    message: "Server error",
+  });
 });
+
+module.exports = app;

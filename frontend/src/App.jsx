@@ -7,6 +7,11 @@ import ChatPage from "./pages/ChatPage.jsx";
 import SignUpPage from "./pages/SignUpPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import { useAuthStore } from "./store/useAuthStore.js";
+import CollectionPage from "./pages/CollectionPage.jsx";
+
+import ActivityTracker from "./components/ActivityTracker.jsx";
+
+import TradePage from "./pages/TradePage.jsx";
 
 function App() {
   const { authUser, isCheckingAuth, checkAuth } = useAuthStore();
@@ -24,7 +29,12 @@ function App() {
 
   return (
     <>
+      <ActivityTracker />
       <Routes>
+        <Route 
+          path="/trades" element={<TradePage />} 
+        />
+
         <Route
           path="/"
           element={authUser ? <HomePage /> : <Navigate to={"/login"} />}
@@ -42,6 +52,15 @@ function App() {
           element={!authUser ? <LoginPage /> : <Navigate to={"/"} />}
         />
         <Route path="*" element={<Navigate to={authUser ? "/" : "/login"} />} />
+
+        <Route
+          path="/collection"
+          element={
+            authUser
+              ? <CollectionPage key={authUser._id} />
+              : <Navigate to="/login" replace />
+          }
+        />
       </Routes>
 
       <Toaster />

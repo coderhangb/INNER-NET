@@ -1,16 +1,27 @@
 const { Router } = require("express");
 const authController = require("../controllers/authController.js");
 const authMiddleware = require("../middlewares/authMiddleware.js");
+const {
+  validateAuthInput,
+} = require("../middlewares/validateInput.js");
 
 const router = Router();
 
-router.route("/signup").post(authController.signupPost);
+router.post(
+  "/signup",
+  validateAuthInput("signup"),
+  authController.signupPost,
+);
 
-router.route("/login").post(authController.loginPost);
+router.post(
+  "/login",
+  validateAuthInput("login"),
+  authController.loginPost,
+);
 
-router.route("/logout").post(authController.logoutPost);
+router.post("/logout", authController.logoutPost);
 
-router.route("/check").get(authMiddleware, (req, res) => {
+router.get("/check", authMiddleware, (req, res) => {
   res.status(200).json(req.user);
 });
 

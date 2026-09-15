@@ -1,16 +1,9 @@
-const { GoogleGenAI } = require("@google/genai");
-
-if (!process.env.GEMINI_API_KEY) {
-  throw new Error("GEMINI_API_KEY is missing");
-}
-
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-});
+const { getGeminiClient } = require("../libs/gemini.js");
 
 const MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
 
-// ==================================SYSTEM_INSTRUCTION=======================================
+// ==================== HƯỚNG DẪN AI GIA SƯ ====================
+
 const SYSTEM_INSTRUCTION = `
 You are INNER-NET, an AI learning coach for children aged 8-12.
 
@@ -275,7 +268,8 @@ Let the learner think.
 Then help them reflect.
 `;
 
-// ==================================EVALUATOR_INSTRUCTION=======================================
+// ==================== HƯỚNG DẪN AI ĐÁNH GIÁ ====================
+
 const EVALUATOR_INSTRUCTION = `
 You are an educational evaluator for children aged 8-12.
 
@@ -324,56 +318,109 @@ or:
 }
 `;
 
+// Lưu chat tạm trong bộ nhớ.
+// Khóa lưu trữ bao gồm ID người dùng và ID cuộc trò chuyện.
 const chats = new Map();
 
+// Theo dõi cuộc trò chuyện đang xử lý tin nhắn.
+const inFlightChats = new Set();
+
+// ==================== XỬ LÝ CHAT ====================
+
 const chatWithLLM = async (req, res) => {
+  let chatKey;
+  let acquired = false;
+
   try {
-    const { conversationId, message } = req.body;
-
-    if (!message || !message.trim()) {
-      return res.status(400).json({
+    // req.user được gán bởi authMiddleware.
+    // Không lấy ID người dùng từ req.body.
+    if (!req.user?._id) {
+      return res.status(401).json({
         success: false,
-        message: "Message is required",
+        message: "Unauthorized",
       });
     }
 
-    if (!conversationId) {
+    const { conversationId, message } = req.body || {};
+
+    // Kiểm tra bổ sung để controller không gọi Gemini với input sai.
+    if (
+      typeof conversationId !== "string" ||
+      !/^[a-zA-Z0-9_-]{1,100}$/.test(conversationId)
+    ) {
       return res.status(400).json({
         success: false,
-        message: "Conversation ID is required",
+        message: "Invalid conversation ID",
       });
     }
 
-    let chat = chats.get(conversationId);
+    if (
+      typeof message !== "string" ||
+      message.trim().length === 0 ||
+      message.length > 2000
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Message must contain between 1 and 2000 characters",
+      });
+    }
+
+    // Hai tài khoản dùng cùng conversationId vẫn có chat riêng.
+    chatKey = JSON.stringify([
+      req.user._id.toString(),
+      conversationId,
+    ]);
+
+    //console.log("[SEC] chatKey:", chatKey);
+
+    // Chặn hai request xử lý đồng thời trong cùng chat.
+    if (inFlightChats.has(chatKey)) {
+      return res.status(409).json({
+        success: false,
+        message: "A message is already being processed",
+      });
+    }
+
+    // Chỉ lấy/khởi tạo Gemini khi có request chat hợp lệ.
+    const ai = getGeminiClient();
+
+    inFlightChats.add(chatKey);
+    acquired = true;
+
+    let chat = chats.get(chatKey);
 
     if (!chat) {
       chat = ai.chats.create({
         model: MODEL,
-
         config: {
           systemInstruction: SYSTEM_INSTRUCTION,
         },
       });
 
-      chats.set(conversationId, chat);
+      chats.set(chatKey, chat);
     }
 
+    // 1. AI gia sư trả lời người học.
     const coachResponse = await chat.sendMessage({
       message: message.trim(),
     });
 
+    // 2. Lấy lịch sử sau khi AI đã trả lời.
     const history = await chat.getHistory();
 
     const historyText = history
       .map((item) => {
         const role = item.role === "model" ? "AI" : "LEARNER";
 
-        const text = (item.parts || []).map((part) => part.text || "").join("");
+        const text = (item.parts || [])
+          .map((part) => part.text || "")
+          .join("");
 
         return `${role}: ${text}`;
       })
       .join("\n\n");
 
+    // 3. AI đánh giá mức độ hoàn thành dựa trên lịch sử.
     const evaluatorResponse = await ai.models.generateContent({
       model: MODEL,
       contents: `
@@ -401,48 +448,48 @@ const chatWithLLM = async (req, res) => {
 
     const evaluation = JSON.parse(evaluatorResponse.text);
 
+    // Kiểm tra kết quả trước khi gửi về frontend.
+    if (
+      !evaluation ||
+      typeof evaluation.complete !== "boolean"
+    ) {
+      throw new Error("Invalid evaluator response");
+    }
+
     return res.status(200).json({
       success: true,
       reply: coachResponse.text,
       complete: evaluation.complete,
     });
   } catch (error) {
-    console.error("Gemini error:", error);
+    // Thiếu khóa Gemini chỉ ảnh hưởng API chat.
+    if (error.code === "GEMINI_NOT_CONFIGURED") {
+      return res.status(503).json({
+        success: false,
+        message: "Chat service is not configured",
+      });
+    }
+
+    // Không ghi nội dung hội thoại hoặc toàn bộ lỗi SDK vào log.
+    console.error("Gemini request failed:", {
+      name: error.name,
+      code: error.code,
+      status: error.status,
+    });
 
     return res.status(500).json({
       success: false,
       message: "Failed to get response from LLM",
     });
+  } finally {
+    // Chỉ request đã giữ khóa mới được giải phóng khóa.
+    // Request bị trả 409 không được mở khóa của request khác.
+    if (acquired) {
+      inFlightChats.delete(chatKey);
+    }
   }
 };
 
 module.exports = {
   chatWithLLM,
 };
-
-// ==================== CHANGES ====================
-//
-// - Thay đổi cách quản lý chat để model có thể duy trì và nhớ toàn bộ
-//   cuộc trò chuyện thông qua conversationId, thay vì mỗi message được
-//   xem như một câu hỏi độc lập.
-//
-// - Request JSON thêm conversationId bên cạnh message.
-//
-//   {
-//     "conversationId": "conversation-1",
-//     "message": "What makes it rain?"
-//   }
-//
-// - Thêm Evaluator chạy song song với Coach để đánh giá dựa trên toàn bộ
-//   conversation history xem trẻ đã trả lời và hiểu đúng câu hỏi chưa.
-//
-// - Response JSON thêm field complete.
-//   Nếu trẻ hoàn thành câu hỏi → complete: true
-//   Nếu chưa hoàn thành → complete: false.
-//
-//   {
-//     "success": true,
-//     "reply": "Great job explaining your answer!",
-//     "complete": true
-//   }
-//
