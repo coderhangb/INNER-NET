@@ -13,11 +13,10 @@ function validId(value) {
 async function main() {
   if (
     !["development", "test"].includes(process.env.NODE_ENV) ||
-    process.env.MONGO_DB_NAME !== "inner-net-card-dev"
+    process.env.MONGO_DB_NAME !== "inner-net"
   ) {
     throw new Error(
-      "Run with NODE_ENV=development/test and " +
-        "MONGO_DB_NAME=inner-net-card-dev",
+      "Run with NODE_ENV=development/test and " + "MONGO_DB_NAME=inner-net",
     );
   }
 

@@ -8,9 +8,9 @@ async function main() {
   // Script chỉ được phép ghi vào đúng DB thử này.
   if (
     process.env.NODE_ENV === "production" ||
-    process.env.MONGO_DB_NAME !== "inner-net-card-dev"
+    process.env.MONGO_DB_NAME !== "inner-net"
   ) {
-    throw new Error("Run this script only against inner-net-card-dev");
+    throw new Error("Run this script only against inner-net");
   }
 
   await connectDB();

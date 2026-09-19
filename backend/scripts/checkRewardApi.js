@@ -5,9 +5,9 @@ const { randomUUID } = require("node:crypto");
 async function main() {
   if (
     !["development", "test"].includes(process.env.NODE_ENV) ||
-    process.env.MONGO_DB_NAME !== "inner-net-card-dev"
+    process.env.MONGO_DB_NAME !== "inner-net"
   )
-    throw new Error("Use inner-net-card-dev and development/test");
+    throw new Error("Use inner-net and development/test");
   const [id] = process.argv.slice(2);
   if (!/^[a-fA-F0-9]{24}$/.test(id || ""))
     throw new Error("Provide an existing student user ID");

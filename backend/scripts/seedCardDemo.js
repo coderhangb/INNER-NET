@@ -21,9 +21,9 @@ const catalog = [
 async function main() {
   if (
     process.env.NODE_ENV === "production" ||
-    process.env.MONGO_DB_NAME !== "inner-net-card-dev"
+    process.env.MONGO_DB_NAME !== "inner-net"
   )
-    throw new Error("Run only against inner-net-card-dev");
+    throw new Error("Run only against inner-net");
   const ids = [...new Set(process.argv.slice(2))];
   if (
     ids.length < 2 ||
@@ -32,8 +32,8 @@ async function main() {
   )
     throw new Error("Provide 2 to 5 different student user IDs");
   await connectDB();
-  if (mongoose.connection.name !== "inner-net-card-dev")
-    throw new Error("Actual database is not inner-net-card-dev");
+  if (mongoose.connection.name !== "inner-net")
+    throw new Error("Actual database is not inner-net");
   const users = await User.find({ _id: { $in: ids } })
     .select("_id role")
     .lean();

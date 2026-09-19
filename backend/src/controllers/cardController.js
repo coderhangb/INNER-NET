@@ -54,12 +54,10 @@ async function listMine(req, res, next) {
     });
   } catch (error) {
     if (error.message === "INVALID_QUERY")
-      return res
-        .status(400)
-        .json({
-          code: "INVALID_QUERY",
-          message: "Invalid filters or pagination",
-        });
+      return res.status(400).json({
+        code: "INVALID_QUERY",
+        message: "Invalid filters or pagination",
+      });
     return next(error);
   }
 }

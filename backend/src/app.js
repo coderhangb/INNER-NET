@@ -14,7 +14,7 @@ const app = express();
 
 const { originGuard, corsMiddleware, csrfGuard } = createRequestSecurity();
 
-if (process.env.TRUST_PROXY === "1") {
+if (process.env.TRUST_PROXY === "1" || process.env.NODE_ENV === "production") {
   app.set("trust proxy", 1);
 }
 
@@ -26,13 +26,13 @@ app.use(cookieParser());
 app.use(express.static(distPath));
 app.use("/public", express.static(path.join(__dirname, "public")));
 
-app.use("/api", originGuard);
-app.use("/api", csrfGuard);
-app.use("/api", express.json({ limit: "32kb" }));
-
 app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
+
+app.use("/api", originGuard);
+app.use("/api", csrfGuard);
+app.use("/api", express.json({ limit: "32kb" }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/llm", llmRoutes);

@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 async function main() {
   if (
     process.env.NODE_ENV === "production" ||
-    process.env.MONGO_DB_NAME !== "inner-net-card-dev"
+    process.env.MONGO_DB_NAME !== "inner-net"
   )
     throw new Error("Run only with development configuration");
   const [a, b] = process.argv.slice(2);
