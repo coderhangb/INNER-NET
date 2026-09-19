@@ -43,9 +43,13 @@ function AppHeader() {
             <MessageCircle className="size-4" aria-hidden="true" />
             <span className="hidden sm:inline">Learn</span>
           </NavLink>
-          <NavLink to="/collection" className={navClass} aria-label="Bộ sưu tập">
+          <NavLink
+            to="/collection"
+            className={navClass}
+            aria-label="Collection"
+          >
             <Layers className="size-4" aria-hidden="true" />
-            <span className="hidden sm:inline">Bộ sưu tập</span>
+            <span className="hidden sm:inline">Collection</span>
           </NavLink>
         </nav>
 
