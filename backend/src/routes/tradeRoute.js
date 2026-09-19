@@ -14,10 +14,7 @@ function bad(message) {
 }
 
 function objectId(value, name) {
-  if (
-    typeof value !== "string" ||
-    !/^[a-fA-F0-9]{24}$/.test(value)
-  ) {
+  if (typeof value !== "string" || !/^[a-fA-F0-9]{24}$/.test(value)) {
     bad(`${name} không hợp lệ.`);
   }
 
@@ -25,11 +22,7 @@ function objectId(value, name) {
 }
 
 function exactBody(body, keys) {
-  if (
-    !body ||
-    typeof body !== "object" ||
-    Array.isArray(body)
-  ) {
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
     bad("Body phải là một object.");
   }
 
@@ -37,20 +30,18 @@ function exactBody(body, keys) {
 
   if (
     actual.length !== keys.length ||
-    actual.some(key => !keys.includes(key))
+    actual.some((key) => !keys.includes(key))
   ) {
     bad("Body thiếu trường hoặc có trường không được phép.");
   }
 }
 
 function cursorQuery(query) {
-  if (Object.keys(query).some(key => key !== "cursor")) {
+  if (Object.keys(query).some((key) => key !== "cursor")) {
     bad("Query không được hỗ trợ.");
   }
 
-  return query.cursor
-    ? objectId(query.cursor, "Cursor")
-    : null;
+  return query.cursor ? objectId(query.cursor, "Cursor") : null;
 }
 
 function code(value) {
@@ -108,12 +99,7 @@ router.get(
 router.get(
   "/",
   endpoint(async (req, res) => {
-    res.json(
-      await service.listOffers(
-        req.user._id,
-        cursorQuery(req.query),
-      ),
-    );
+    res.json(await service.listOffers(req.user._id, cursorQuery(req.query)));
   }),
 );
 
@@ -129,14 +115,8 @@ router.post(
 
     const body = {
       recipientCode: code(req.body.recipientCode),
-      offeredCardId: objectId(
-        req.body.offeredCardId,
-        "Card đưa ra",
-      ),
-      requestedCardId: objectId(
-        req.body.requestedCardId,
-        "Card muốn nhận",
-      ),
+      offeredCardId: objectId(req.body.offeredCardId, "Card đưa ra"),
+      requestedCardId: objectId(req.body.requestedCardId, "Card muốn nhận"),
       requestKey: req.body.requestKey,
     };
 

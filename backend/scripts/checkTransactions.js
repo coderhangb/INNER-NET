@@ -10,16 +10,12 @@ async function main() {
     process.env.NODE_ENV === "production" ||
     process.env.MONGO_DB_NAME !== "inner-net-card-dev"
   ) {
-    throw new Error(
-      "Run this script only against inner-net-card-dev",
-    );
+    throw new Error("Run this script only against inner-net-card-dev");
   }
 
   await connectDB();
 
-  const collection = mongoose.connection.db.collection(
-    "_transaction_checks",
-  );
+  const collection = mongoose.connection.db.collection("_transaction_checks");
 
   const firstId = new mongoose.Types.ObjectId();
   const secondId = new mongoose.Types.ObjectId();
@@ -49,15 +45,9 @@ async function main() {
       );
     });
 
-    assert.equal(
-      (await collection.findOne({ _id: firstId })).value,
-      7,
-    );
+    assert.equal((await collection.findOne({ _id: firstId })).value, 7);
 
-    assert.equal(
-      (await collection.findOne({ _id: secondId })).value,
-      23,
-    );
+    assert.equal((await collection.findOne({ _id: secondId })).value, 23);
 
     console.log("PASS: transaction committed both changes");
 
@@ -78,15 +68,9 @@ async function main() {
     );
 
     // Thay đổi vừa rồi phải được hoàn tác.
-    assert.equal(
-      (await collection.findOne({ _id: firstId })).value,
-      7,
-    );
+    assert.equal((await collection.findOne({ _id: firstId })).value, 7);
 
-    assert.equal(
-      (await collection.findOne({ _id: secondId })).value,
-      23,
-    );
+    assert.equal((await collection.findOne({ _id: secondId })).value, 23);
 
     console.log("PASS: failed transaction rolled back");
   } finally {

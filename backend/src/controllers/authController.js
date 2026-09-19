@@ -3,8 +3,7 @@ const { createToken } = require("../libs/utils.js");
 
 const getCookieOptions = (req) => {
   const host = req?.headers?.host || "";
-  const isLocal =
-    host.includes("localhost") || host.includes("127.0.0.1");
+  const isLocal = host.includes("localhost") || host.includes("127.0.0.1");
 
   if (isLocal) {
     return {
@@ -17,8 +16,7 @@ const getCookieOptions = (req) => {
 
   const forwardedProto = req?.headers?.["x-forwarded-proto"];
   const isTunnelSecure =
-    req?.secure ||
-    (forwardedProto && forwardedProto.includes("https"));
+    req?.secure || (forwardedProto && forwardedProto.includes("https"));
 
   return {
     httpOnly: true,
@@ -59,8 +57,7 @@ function handleError(error) {
   if (error.name === "ValidationError" && error.errors) {
     Object.values(error.errors).forEach((fieldError) => {
       const path = fieldError.properties?.path || fieldError.path;
-      const message =
-        fieldError.properties?.message || fieldError.message;
+      const message = fieldError.properties?.message || fieldError.message;
 
       if (Object.prototype.hasOwnProperty.call(err, path)) {
         err[path] = message;

@@ -69,10 +69,7 @@ const schema = new mongoose.Schema(
   { timestamps: true },
 );
 
-schema.index(
-  { proposerId: 1, requestKey: 1 },
-  { unique: true },
-);
+schema.index({ proposerId: 1, requestKey: 1 }, { unique: true });
 
 schema.index({ proposerId: 1, _id: -1 });
 schema.index({ recipientId: 1, _id: -1 });

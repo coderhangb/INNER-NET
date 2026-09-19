@@ -366,10 +366,7 @@ const chatWithLLM = async (req, res) => {
     }
 
     // Hai tài khoản dùng cùng conversationId vẫn có chat riêng.
-    chatKey = JSON.stringify([
-      req.user._id.toString(),
-      conversationId,
-    ]);
+    chatKey = JSON.stringify([req.user._id.toString(), conversationId]);
 
     //console.log("[SEC] chatKey:", chatKey);
 
@@ -412,9 +409,7 @@ const chatWithLLM = async (req, res) => {
       .map((item) => {
         const role = item.role === "model" ? "AI" : "LEARNER";
 
-        const text = (item.parts || [])
-          .map((part) => part.text || "")
-          .join("");
+        const text = (item.parts || []).map((part) => part.text || "").join("");
 
         return `${role}: ${text}`;
       })
@@ -449,10 +444,7 @@ const chatWithLLM = async (req, res) => {
     const evaluation = JSON.parse(evaluatorResponse.text);
 
     // Kiểm tra kết quả trước khi gửi về frontend.
-    if (
-      !evaluation ||
-      typeof evaluation.complete !== "boolean"
-    ) {
+    if (!evaluation || typeof evaluation.complete !== "boolean") {
       throw new Error("Invalid evaluator response");
     }
 

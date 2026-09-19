@@ -15,7 +15,6 @@ function createRequestSecurity() {
       .map((value) => {
         const url = new URL(value);
 
-        // Chỉ chấp nhận origin, ví dụ http://localhost:5173.
         if (
           !["http:", "https:"].includes(url.protocol) ||
           value !== url.origin
@@ -33,11 +32,23 @@ function createRequestSecurity() {
     throw new Error("CLIENT_URL must contain at least one origin");
   }
 
-  // Chặn nguồn không được phép trước khi request vào routes.
+  function isAllowedRequest(req) {
+    const origin = req.get("Origin");
+    const host = req.get("Host");
+    const protocol = req.protocol;
+    const selfOrigin = `${protocol}://${host}`;
+
+    if (!origin) {
+      return true;
+    }
+
+    return origin === selfOrigin || allowedOrigins.has(origin);
+  }
+
   function originGuard(req, res, next) {
     const origin = req.get("Origin");
 
-    if (origin && !allowedOrigins.has(origin)) {
+    if (origin && !isAllowedRequest(req)) {
       return res.status(403).json({
         message: "Origin is not allowed",
       });
@@ -48,15 +59,14 @@ function createRequestSecurity() {
 
   const corsMiddleware = cors({
     origin(origin, callback) {
-      callback(null, Boolean(origin && allowedOrigins.has(origin)));
+      if (!origin || allowedOrigins.has(origin)) {
+        return callback(null, true);
+      }
+      return callback(null, false);
     },
     credentials: true,
     methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: [
-      "Content-Type",
-      "X-CSRF-Protection",
-      "Idempotency-Key",
-    ],
+    allowedHeaders: ["Content-Type", "X-CSRF-Protection", "Idempotency-Key"],
   });
 
   function csrfGuard(req, res, next) {
@@ -66,22 +76,24 @@ function createRequestSecurity() {
       return next();
     }
 
-    const origin = req.get("Origin");
-
-    // Yêu cầu ghi dữ liệu phải có Origin hợp lệ.
-    if (!origin || !allowedOrigins.has(origin)) {
+    if (!isAllowedRequest(req)) {
       return res.status(403).json({
         message: "CSRF check failed: invalid origin",
       });
     }
 
-    if (req.get("X-CSRF-Protection") !== "1") {
-      return res.status(403).json({
-        message: "CSRF check failed: missing protection header",
-      });
+    const csrfHeader = req.get("X-CSRF-Protection");
+    const isSameOrigin =
+      !req.get("Origin") ||
+      req.get("Origin") === `${req.protocol}://${req.get("Host")}`;
+
+    if (csrfHeader === "1" || isSameOrigin) {
+      return next();
     }
 
-    return next();
+    return res.status(403).json({
+      message: "CSRF check failed: missing protection header",
+    });
   }
 
   return {

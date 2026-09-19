@@ -51,12 +51,12 @@ export const useAuthStore = create((set) => ({
     } catch (error) {
       toast.error(
         error.response?.data?.fullName ||
-        error.response?.data?.email ||
-        error.response?.data?.password ||
-        error.response?.data?.role ||
-        error.response?.data?.message ||
-        "Unable to create your account. Please try again.",
-    );
+          error.response?.data?.email ||
+          error.response?.data?.password ||
+          error.response?.data?.role ||
+          error.response?.data?.message ||
+          "Unable to create your account. Please try again.",
+      );
     } finally {
       set({ isLoggingIn: false });
     }
@@ -69,13 +69,13 @@ export const useAuthStore = create((set) => ({
 
       // toast from react hot toast
       toast.success(res.data.message);
-    } catch {
+    } catch (error) {
       toast.error(
         error.response?.data?.email ||
-        error.response?.data?.password ||
-        error.response?.data?.message ||
-        "Unable to log in. Please check your connection.",
-    );
+          error.response?.data?.password ||
+          error.response?.data?.message ||
+          "Unable to log in. Please check your connection.",
+      );
     }
   },
 }));

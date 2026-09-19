@@ -15,19 +15,14 @@ async function main() {
     dbName: process.env.MONGO_DB_NAME,
   });
 
-  for (const model of [
-    TradeProfile,
-    TradeOffer,
-    Card,
-    AssetEvent,
-  ]) {
+  for (const model of [TradeProfile, TradeOffer, Card, AssetEvent]) {
     await model.createIndexes();
     console.log(`INDEX OK: ${model.modelName}`);
   }
 }
 
 main()
-  .catch(error => {
+  .catch((error) => {
     console.error(error.message);
     process.exitCode = 1;
   })

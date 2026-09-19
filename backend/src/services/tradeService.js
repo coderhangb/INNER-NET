@@ -111,12 +111,7 @@ async function getMyCode(userId) {
  * Release only the card locked by THIS offer.
  * Never clear another trade's lock.
  */
-async function finishWithoutTransfer(
-  offer,
-  status,
-  session,
-  now = new Date(),
-) {
+async function finishWithoutTransfer(offer, status, session, now = new Date()) {
   await Card.updateOne(
     {
       _id: offer.offeredCardId,
@@ -143,18 +138,13 @@ async function finishWithoutTransfer(
 }
 
 async function expireOffer(offerId) {
-  return transaction(async session => {
+  return transaction(async (session) => {
     const offer = await TradeOffer.findById(offerId).session(session);
 
     if (!offer || offer.status !== "pending") return false;
     if (+offer.expiresAt > Date.now()) return false;
 
-    await finishWithoutTransfer(
-      offer,
-      "expired",
-      session,
-      new Date(),
-    );
+    await finishWithoutTransfer(offer, "expired", session, new Date());
 
     return true;
   });
@@ -172,10 +162,7 @@ async function expireBatch(userId = null) {
   };
 
   if (userId) {
-    filter.$or = [
-      { proposerId: userId },
-      { recipientId: userId },
-    ];
+    filter.$or = [{ proposerId: userId }, { recipientId: userId }];
   }
 
   const offers = await TradeOffer.find(filter)
@@ -235,9 +222,7 @@ async function findPartner(userId, code, cursor = null) {
       fullName: partner.fullName,
     },
     items,
-    nextCursor: hasMore
-      ? String(items[items.length - 1]._id)
-      : null,
+    nextCursor: hasMore ? String(items[items.length - 1]._id) : null,
   };
 }
 
@@ -247,10 +232,7 @@ function checkReplay(offer, body, recipientId) {
     !same(offer.requestedCardId, body.requestedCardId) ||
     !same(offer.recipientId, recipientId)
   ) {
-    throw fault(
-      409,
-      "Mã yêu cầu đã được dùng cho nội dung trao đổi khác.",
-    );
+    throw fault(409, "Mã yêu cầu đã được dùng cho nội dung trao đổi khác.");
   }
 
   return publicOffer(offer);
@@ -283,7 +265,7 @@ async function createOffer(userId, body) {
   const offerId = new mongoose.Types.ObjectId();
 
   try {
-    return await transaction(async session => {
+    return await transaction(async (session) => {
       await requireStudent(userId, session);
       await requireStudent(recipientId, session);
 
@@ -387,10 +369,7 @@ async function listOffers(userId, cursor = null) {
   await expireBatch(userId);
 
   const filter = {
-    $or: [
-      { proposerId: userId },
-      { recipientId: userId },
-    ],
+    $or: [{ proposerId: userId }, { recipientId: userId }],
   };
 
   if (cursor) {
@@ -407,9 +386,7 @@ async function listOffers(userId, cursor = null) {
 
   return {
     items: items.map(publicOffer),
-    nextCursor: hasMore
-      ? String(items[items.length - 1]._id)
-      : null,
+    nextCursor: hasMore ? String(items[items.length - 1]._id) : null,
   };
 }
 
@@ -427,15 +404,14 @@ async function actOnOffer(
     throw fault(400, "Thao tác không hợp lệ.");
   }
 
-  return transaction(async session => {
+  return transaction(async (session) => {
     await requireStudent(userId, session);
 
     const offer = await TradeOffer.findById(offerId).session(session);
 
     if (
       !offer ||
-      (!same(userId, offer.proposerId) &&
-        !same(userId, offer.recipientId))
+      (!same(userId, offer.proposerId) && !same(userId, offer.recipientId))
     ) {
       throw fault(404, "Không tìm thấy đề nghị.");
     }
@@ -447,10 +423,7 @@ async function actOnOffer(
       throw fault(403, "Chỉ người gửi được hủy đề nghị.");
     }
 
-    if (
-      ["accept", "decline"].includes(action) &&
-      !isRecipient
-    ) {
+    if (["accept", "decline"].includes(action) && !isRecipient) {
       throw fault(403, "Chỉ người nhận được xử lý đề nghị.");
     }
 
@@ -471,21 +444,11 @@ async function actOnOffer(
     const now = new Date();
 
     if (+offer.expiresAt <= +now) {
-      return finishWithoutTransfer(
-        offer,
-        "expired",
-        session,
-        now,
-      );
+      return finishWithoutTransfer(offer, "expired", session, now);
     }
 
     if (action !== "accept") {
-      return finishWithoutTransfer(
-        offer,
-        targetStatus,
-        session,
-        now,
-      );
+      return finishWithoutTransfer(offer, targetStatus, session, now);
     }
 
     /*

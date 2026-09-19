@@ -37,12 +37,12 @@ async function main() {
     // Drain remaining batches sooner when a full batch was found.
     const delay = result.scanned === 100 ? 1000 : 30000;
 
-    await new Promise(resolve => setTimeout(resolve, delay));
+    await new Promise((resolve) => setTimeout(resolve, delay));
   } while (!stopping);
 }
 
 main()
-  .catch(error => {
+  .catch((error) => {
     console.error(error.message);
     process.exitCode = 1;
   })

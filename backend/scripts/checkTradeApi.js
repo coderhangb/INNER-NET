@@ -7,10 +7,7 @@ const { randomUUID } = require("node:crypto");
 const BASE_URL = "http://localhost:3000";
 
 function validId(value) {
-  return (
-    typeof value === "string" &&
-    /^[a-fA-F0-9]{24}$/.test(value)
-  );
+  return typeof value === "string" && /^[a-fA-F0-9]{24}$/.test(value);
 }
 
 async function main() {
@@ -20,7 +17,7 @@ async function main() {
   ) {
     throw new Error(
       "Run with NODE_ENV=development/test and " +
-      "MONGO_DB_NAME=inner-net-card-dev",
+        "MONGO_DB_NAME=inner-net-card-dev",
     );
   }
 
@@ -34,22 +31,15 @@ async function main() {
     throw new Error("Provide an existing student user ID");
   }
 
-  const token = jwt.sign(
-    { id: studentId },
-    process.env.JWT_SECRET,
-    { expiresIn: "5m" },
-  );
+  const token = jwt.sign({ id: studentId }, process.env.JWT_SECRET, {
+    expiresIn: "5m",
+  });
 
   const origin = process.env.CLIENT_URL || "http://localhost:5173";
 
   async function call(
     path,
-    {
-      method = "GET",
-      body,
-      auth = true,
-      csrf = true,
-    } = {},
+    { method = "GET", body, auth = true, csrf = true } = {},
   ) {
     const headers = { Origin: origin };
 
@@ -71,9 +61,7 @@ async function main() {
       response = await fetch(`${BASE_URL}${path}`, {
         method,
         headers,
-        body: body === undefined
-          ? undefined
-          : JSON.stringify(body),
+        body: body === undefined ? undefined : JSON.stringify(body),
         signal: AbortSignal.timeout(15000),
       });
     } catch (error) {
@@ -81,7 +69,7 @@ async function main() {
 
       throw new Error(
         `${method} ${path}: connection failed (${cause}). ` +
-        "Check the backend terminal.",
+          "Check the backend terminal.",
       );
     }
 
@@ -94,7 +82,7 @@ async function main() {
     } catch {
       throw new Error(
         `${method} ${path}: expected JSON, got HTTP ` +
-        `${response.status}: ${text.slice(0, 150)}`,
+          `${response.status}: ${text.slice(0, 150)}`,
       );
     }
 
@@ -110,8 +98,7 @@ async function main() {
     assert.equal(
       result.status,
       expected,
-      `${options?.method || "GET"} ${path}: ` +
-      JSON.stringify(result.data),
+      `${options?.method || "GET"} ${path}: ` + JSON.stringify(result.data),
     );
 
     return result.data;
@@ -143,7 +130,7 @@ async function main() {
       method: "POST",
       body: {},
     },
-    ...["accept", "decline", "cancel"].map(action => ({
+    ...["accept", "decline", "cancel"].map((action) => ({
       path: `/api/trades/${fakeOfferId}/${action}`,
       method: "POST",
       body: {},
@@ -173,7 +160,7 @@ async function main() {
   for (const offer of list.items) {
     assert.ok(
       String(offer.proposerId) === studentId ||
-      String(offer.recipientId) === studentId,
+        String(offer.recipientId) === studentId,
       "List returned another user's offer",
     );
   }
@@ -239,11 +226,7 @@ async function main() {
   ];
 
   for (const body of invalidBodies) {
-    await expectStatus(
-      "/api/trades",
-      { method: "POST", body },
-      400,
-    );
+    await expectStatus("/api/trades", { method: "POST", body }, 400);
   }
 
   console.log("PASS: forged fields and invalid creation bodies rejected");
@@ -267,16 +250,12 @@ async function main() {
 
   console.log("PASS: invalid action IDs and forged actors rejected");
 
-  console.log(
-    "DONE: no valid trade creation/accept/decline/cancel requested.",
-  );
+  console.log("DONE: no valid trade creation/accept/decline/cancel requested.");
 
-  console.log(
-    "NOTE: GET /api/trades may clean up existing expired offers.",
-  );
+  console.log("NOTE: GET /api/trades may clean up existing expired offers.");
 }
 
-main().catch(error => {
+main().catch((error) => {
   console.error("FAIL:", error.message);
   process.exitCode = 1;
 });
