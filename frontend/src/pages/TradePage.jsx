@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import AppHeader from "../components/AppHeader.jsx";
+import AppFooter from "../components/AppFooter";
 import PageLoader from "../components/PageLoader.jsx";
 import { axiosInstance } from "../libs/axios.js";
 import { useAuthStore } from "../store/useAuthStore.js";
@@ -250,8 +251,12 @@ function TradeContent({ userId }) {
 
   if (initialLoading) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-[#FFF7E3]">
-        <PageLoader />
+      <div className="flex flex-col">
+        <AppHeader />
+        <main className="flex min-h-[105vh] items-center justify-center">
+          <PageLoader />
+        </main>
+        <AppFooter />
       </div>
     );
   }
@@ -260,7 +265,7 @@ function TradeContent({ userId }) {
   const selectedRequestedCard = theirs.items.find((c) => c._id === requestedId);
 
   return (
-    <>
+    <div className="flex flex-col">
       <AppHeader />
 
       {busy && (
@@ -270,7 +275,7 @@ function TradeContent({ userId }) {
         </div>
       )}
 
-      <main className="mx-auto max-w-6xl px-4 py-8 text-slate-700">
+      <main className="mx-auto w-full max-w-6xl min-h-[105vh] px-4 py-8 text-slate-700">
         <h1 className="text-3xl font-bold text-slate-900">Card Trading</h1>
 
         <p className="mt-3">
@@ -598,7 +603,9 @@ function TradeContent({ userId }) {
           </div>
         </section>
       </main>
-    </>
+
+      <AppFooter />
+    </div>
   );
 }
 

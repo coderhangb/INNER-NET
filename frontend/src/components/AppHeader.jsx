@@ -1,6 +1,13 @@
 import { NavLink } from "react-router";
 import { useAuthStore } from "../store/useAuthStore";
-import { Home, LogOut, MessageCircle, Sparkles, Layers } from "lucide-react";
+import {
+  Home,
+  LogOut,
+  MessageCircle,
+  Sparkles,
+  Layers,
+  ArrowLeftRight,
+} from "lucide-react";
 
 function AppHeader() {
   const { authUser, logout } = useAuthStore();
@@ -50,6 +57,10 @@ function AppHeader() {
           >
             <Layers className="size-4" aria-hidden="true" />
             <span className="hidden sm:inline">Collection</span>
+          </NavLink>
+          <NavLink to="/trades" className={navClass} aria-label="Trades">
+            <ArrowLeftRight className="size-4" aria-hidden="true" />
+            <span className="hidden sm:inline">Trade</span>
           </NavLink>
         </nav>
 

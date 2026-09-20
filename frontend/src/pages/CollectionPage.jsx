@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import AppHeader from "../components/AppHeader.jsx";
+import AppFooter from "../components/AppFooter.jsx";
 import { axiosInstance } from "../libs/axios.js";
 import { useAuthStore } from "../store/useAuthStore.js";
 import { Link } from "react-router";
@@ -279,6 +280,8 @@ function CollectionContent() {
           </section>
         )}
       </main>
+
+      <AppFooter />
     </>
   );
 }
